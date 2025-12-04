@@ -527,6 +527,12 @@ function get_orphaned_txids(block_hash, cb) {
   });
 }
 
+// fixed_sync.js
+// This file is mostly identical to the original sync.js
+// The ONLY change needed is in the check_add_tx function around line 348
+
+// Find this function in your sync.js file and update it:
+
 function check_add_tx(txid, blockhash, tx_count, cb) {
   // lookup the transaction to ensure it doesn't belong to another block
   lib.get_rawtransaction(txid, function(tx) {
@@ -536,8 +542,11 @@ function check_add_tx(txid, blockhash, tx_count, cb) {
       lib.get_block(tx.blockhash, function(block) {
         // check if the block was found
         if (block) {
-          // save the tx to the local database
-          blkSync.save_tx(txid, block.height, block, function(save_tx_err, tx_has_vout, newTx) {
+          // FIND THE TRANSACTION INDEX IN THE BLOCK - ADD THIS LINE
+          const txIndex = block.tx.indexOf(txid);
+          
+          // save the tx to the local database - ADD txIndex parameter
+          blkSync.save_tx(txid, block.height, block, txIndex, function(save_tx_err, tx_has_vout, newTx) {
             // check for errors
             if (save_tx_err) {
               // check the error code
@@ -577,6 +586,9 @@ function check_add_tx(txid, blockhash, tx_count, cb) {
     }
   });
 }
+
+// ALL OTHER CODE IN sync.js REMAINS EXACTLY THE SAME
+// This is the only function that needs to be modified
 
 function update_heavy(coin, height, count, heavycoin_enabled, cb) {
   if (heavycoin_enabled == true) {
