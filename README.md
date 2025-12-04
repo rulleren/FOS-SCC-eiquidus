@@ -326,7 +326,7 @@ exit
 #### Download Source Code
 
 ```
-git clone https://github.com/rulleren/FOS-SCC-eiquidus
+git clone https://github.com/rulleren/FOS-SCC-eiquidus explorer
 ```
 
 #### Install Node Modules
