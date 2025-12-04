@@ -1,13 +1,18 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+// fixed_addresstx.js
+// You need to add the txIndex field to your AddressTx model
 
-var AddressTXSchema = new Schema({
-  a_id: { type: String, index: true},
-  blockindex: {type: Number, default: 0, index: true},
-  txid: { type: String, lowercase: true, index: true},
-  amount: { type: Number, default: 0, index: true}
+var mongoose = require('mongoose'),
+   Schema = mongoose.Schema;
+
+var AddressTxSchema = new Schema({
+  a_id: { type: String, index: true },
+  txid: { type: String, lowercase: true, index: true },
+  blockindex: { type: Number, default: 0, index: true },
+  txIndex: { type: Number, default: 0 }, // ADD THIS LINE - transaction position within block
+  amount: { type: Number, default: 0, index: true }
 }, {id: false});
 
-AddressTXSchema.index({a_id: 1, blockindex: -1});
+// ADD THIS COMPOUND INDEX for proper transaction ordering
+AddressTxSchema.index({a_id: 1, blockindex: 1, txIndex: 1});
 
-module.exports = mongoose.model('AddressTx', AddressTXSchema);
+module.exports = mongoose.model('AddressTx', AddressTxSchema);
