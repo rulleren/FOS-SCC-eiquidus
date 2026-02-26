@@ -9,13 +9,13 @@ var TxSchema = new Schema({
   timestamp: { type: Number, default: 0, index: true },
   blockhash: { type: String, index: true },
   blockindex: {type: Number, default: 0, index: true},
-  txIndex: { type: Number, default: 0, index: true }, // ADD THIS LINE - transaction position within block
+  txIndex: { type: Number, default: 0, index: true },
   tx_type: { type: String, default: null },
   op_return: { type: String, default: null },
   algo: { type: String, default: null }
 }, {id: false});
 
 TxSchema.index({total: 1, total: -1, blockindex: 1, blockindex: -1});
-TxSchema.index({blockindex: 1, txIndex: 1}); // ADD THIS LINE - compound index for correct ordering
+TxSchema.index({blockindex: 1, txIndex: 1});
 
 module.exports = mongoose.model('Tx', TxSchema);
