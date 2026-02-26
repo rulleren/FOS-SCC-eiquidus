@@ -1,14 +1,9 @@
-# eIquidus
+# FOS-SCC-eiquidus
 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/team-exor/eiquidus?color=ffbd11&label=version)
-![GitHub Release Date](https://img.shields.io/github/release-date/team-exor/eiquidus)
-![GitHub last commit](https://img.shields.io/github/last-commit/team-exor/eiquidus)
-<img src="public/img/screenshots/platform-windows macos linux-lightgrey.svg" />
-![GitHub](https://img.shields.io/github/license/team-exor/eiquidus?color=ffbd11)
+![GitHub last commit](https://img.shields.io/github/last-commit/rulleren/FOS-SCC-eiquidus)
+![GitHub](https://img.shields.io/github/license/rulleren/FOS-SCC-eiquidus?color=ffbd11)
 
-Written in node.js and mongodb, eIquidus is the most stable, secure, customizable and feature-rich open-source block explorer with support for virtually any altcoin that implements some form of the [Bitcoin RPC API protocol](https://developer.bitcoin.org/reference/rpc/index.html) (EVM blockchains such as ETH, BNB, etc. are not supported). Originally built for the [Exor blockchain](https://github.com/team-exor/exor), eIquidus has since grown into a fully-featured explorer with a focus on stability and security at its core. All features from the [original iquidus explorer](https://github.com/iquidus/explorer) are included here along with many new ideas from other iquidus forks, and an absolute ton of new custom changes and bug fixes that were developed specifically for eIquidus.
-
-![Homepage](public/img/screenshots/homepage-1-103-0.png)
+FOS-SCC-eiquidus is a [Friends of StakeCube](https://explorer.friendsofstakecube.net) fork of [eIquidus](https://github.com/team-exor/eiquidus), a feature-rich open-source block explorer written in node.js and mongodb. It supports virtually any altcoin that implements some form of the [Bitcoin RPC API protocol](https://developer.bitcoin.org/reference/rpc/index.html) (EVM blockchains such as ETH, BNB, etc. are not supported). This fork is customized for the SCC (StakeCube Coin) blockchain with additional fixes and improvements built on top of the upstream eIquidus explorer.
 
 ### Crowdfunding Program
 
@@ -956,6 +951,22 @@ This script is more of a debugging tool for developers which allows you to sync 
 The benchmark script can be started with the following command:
 
 `npm run benchmark`
+
+#### Fix Address Balances Script
+
+This utility script recalculates and corrects the received, sent, and balance values for all addresses in the database by re-processing all address transactions from scratch. Useful if address balances appear incorrect after a sync issue or database migration. The script will log progress every 100 addresses and disconnect automatically when finished.
+
+Run the script with the following command:
+
+`npm run fix-balances`
+
+#### Remove Duplicate Addresses Script
+
+This utility script finds and removes duplicate address records from the database, keeping only the first occurrence of each address. Useful for cleaning up the database if duplicate entries were created due to a sync issue. The script will log the number of duplicates found and removed, then disconnect automatically when finished.
+
+Run the script with the following command:
+
+`npm run remove-duplicate-addresses`
 
 ### Known Issues
 

@@ -28,7 +28,9 @@
     "restore-backup": "node ./scripts/restore_backup.js",
     "delete-database": "node ./scripts/delete_database.js",
     "update-explorer": "node ./scripts/update_explorer.js",
-    "benchmark": "node ./scripts/benchmark.js"
+    "benchmark": "node ./scripts/benchmark.js",
+    "fix-balances": "node ./scripts/fix_address_balances.js",
+    "remove-duplicate-addresses": "node ./scripts/remove_duplicate_addresses.js"
   },
   "dependencies": {
     "async": "^3.2.6",
