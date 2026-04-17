@@ -66,6 +66,13 @@ html(lang='en')
           - showNethashChart = true
         if settings.masternodes_page.show_difficulty_chart == true
           - showDifficultyChart = true
+      when 'extraction'
+        if settings.extraction_page.show_panels == true
+          - showPanels = true
+        if settings.extraction_page.show_nethash_chart == true
+          - showNethashChart = true
+        if settings.extraction_page.show_difficulty_chart == true
+          - showDifficultyChart = true
       when 'movement'
         if settings.movement_page.show_panels == true
           - showPanels = true
@@ -165,7 +172,7 @@ html(lang='en')
     else
       - showNethashChart = false
       - showDifficultyChart = false
-    if active == 'home' || active == 'address' || active == 'block' || active == 'markets' || active == 'masternodes' || active == 'movement' || active == 'network' || active == 'orphans' || active == 'reward' || active == 'richlist' || active == 'tx'
+    if active == 'home' || active == 'address' || active == 'block' || active == 'extraction' || active == 'markets' || active == 'masternodes' || active == 'movement' || active == 'network' || active == 'orphans' || active == 'reward' || active == 'richlist' || active == 'tx'
       include ./includes/common.pug
     if active == 'markets' || active == 'richlist' || active == 'reward' || showNethashChart == true || showDifficultyChart == true
       script(type='text/javascript', src='https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js')
@@ -1471,6 +1478,11 @@ html(lang='en')
                     a.nav-link(href='/masternodes')
                       span.fa-solid.fa-share-nodes
                       span.margin-left-5 Masternodes
+                if settings.extraction_page.enabled == true
+                  li#extraction.nav-item
+                    a.nav-link(href='/extraction')
+                      span.fa-solid.fa-hammer
+                      span.margin-left-5 Extraction
                 if settings.movement_page.enabled == true
                   li#movement.nav-item
                     a.nav-link(href='/movement')
@@ -1596,6 +1608,11 @@ html(lang='en')
                   a.nav-link(href='/masternodes')
                     span.nav-icon.fa-solid.fa-share-nodes
                     span.margin-left-5 Masternodes
+              if settings.extraction_page.enabled == true
+                li#extraction.nav-item(alt="Extraction", title="Extraction", data-bs-toggle='tooltip', data-bs-placement='right')
+                  a.nav-link(href='/extraction')
+                    span.nav-icon.fa-solid.fa-hammer
+                    span.margin-left-5 Extraction
               if settings.movement_page.enabled == true
                 li#movement.nav-item(alt=settings.localization.menu_movement, title=settings.localization.menu_movement, data-bs-toggle='tooltip', data-bs-placement='right')
                   a.nav-link(href='/movement')

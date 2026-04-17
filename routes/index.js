@@ -606,6 +606,34 @@ router.get('/network', function(req, res) {
 });
 
 // masternode list page
+router.get('/extraction', function(req, res) {
+  if (settings.extraction_page.enabled == true) {
+    const pow_limit = settings.extraction_page.pow_table.max_items;
+    const mn_limit = settings.extraction_page.mn_table.max_items;
+
+    db.get_pow_extraction(pow_limit, function(pow_data, total_blocks) {
+      db.get_mn_reward_distribution(mn_limit, function(mn_data) {
+        res.render(
+          'extraction',
+          {
+            active: 'extraction',
+            pow_data: pow_data,
+            total_blocks: total_blocks,
+            mn_data: mn_data,
+            showSync: db.check_show_sync_message(),
+            customHash: get_custom_hash(),
+            styleHash: get_style_hash(),
+            themeHash: get_theme_hash(),
+            page_title_prefix: settings.coin.name + ' Block Extraction'
+          }
+        );
+      });
+    });
+  } else {
+    route_get_txlist(res, null);
+  }
+});
+
 router.get('/masternodes', function(req, res) {
   // ensure masternode page is enabled
   if (settings.masternodes_page.enabled == true) {

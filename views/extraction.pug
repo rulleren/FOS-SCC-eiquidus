@@ -1,0 +1,78 @@
+extends layout
+
+block content
+  - var theadClasses = [];
+  if settings.shared_pages.table_header_bgcolor != null && settings.shared_pages.table_header_bgcolor != ''
+    - theadClasses.push('table-' + settings.shared_pages.table_header_bgcolor);
+  if settings.extraction_page.page_header.show_img == true || settings.extraction_page.page_header.show_title == true || settings.extraction_page.page_header.show_description == true
+    .row(style='margin: 0 0 5px 0;')
+      .col-12
+        .container
+          #page-header-container(style='align-items:' + (settings.extraction_page.page_header.show_img == true && settings.extraction_page.page_header.show_title == true && settings.extraction_page.page_header.show_description == true ? 'flex-start' : 'center'))
+            if settings.extraction_page.page_header.show_img == true
+              #header-img-container
+                img#header-img(src=(settings.shared_pages.page_header.page_title_image == null || settings.shared_pages.page_header.page_title_image.image_path == null || settings.shared_pages.page_header.page_title_image.image_path == '' ? '/img/page-title-img.png' : settings.shared_pages.page_header.page_title_image.image_path))
+            #page-title-container
+              if settings.extraction_page.page_header.show_title == true
+                h3#page-title #{settings.coin.name} Extraction
+              if settings.extraction_page.page_header.show_description == true
+                .sub-page-header.text-muted
+                  .alert.alert-info(style='margin-top:10px;margin-bottom:0;')
+                    span.fa-solid.fa-circle-info(style='margin-right:8px;')
+                    strong In this page, you can see some information about the #{settings.coin.name} block extraction.
+                    br
+                    | A block can be extracted by different consensus algorithms like Proof-of-Work (PoW) and Proof-of-Stake (PoS). In this page, you can see which miners/minters/pools are extracting the most blocks.
+          .cardSpacer.clearfix
+  .row(style='margin-left:0;margin-right:0;')
+    .col-12.col-lg-6
+      .container
+        .card.card-default.border-0
+          .card-header.text-center
+            span.fa-solid.fa-hammer(style='margin-right:6px;')
+            strong PoW Block Extraction
+          table.table.table-hover.table-bordered.table-striped.summary-table.right-border-0(style='margin-bottom:0;', cellspacing='0')
+            thead
+              tr(class=theadClasses)
+                th.text-center Rank
+                th Pool/Minter
+                th.text-center Extracted blocks
+                th.text-center Percentage
+            tbody
+              if pow_data && pow_data.length > 0
+                each miner, index in pow_data
+                  tr
+                    td.text-center ##{index + 1}
+                    td
+                      a(href='/address/' + miner._id) #{miner._id.length > 20 ? miner._id.substring(0, 10) + '...' + miner._id.substring(miner._id.length - 10) : miner._id}
+                    td.text-center #{miner.count}
+                    td.text-center
+                      if total_blocks > 0
+                        | #{parseFloat((miner.count / total_blocks * 100).toFixed(2))}%
+                      else
+                        | 0.00%
+              else
+                tr
+                  td.text-center(colspan='4') No extraction data available
+    .col-12.col-lg-6
+      .container
+        .card.card-default.border-0
+          .card-header.text-center
+            span.fa-solid.fa-share-nodes(style='margin-right:6px;')
+            strong Masternode Reward Distribution
+          table.table.table-hover.table-bordered.table-striped.summary-table.right-border-0(style='margin-bottom:0;', cellspacing='0')
+            thead
+              tr(class=theadClasses)
+                th.text-center Rank
+                th MN PubKey
+                th.text-center Last Paid Block
+            tbody
+              if mn_data && mn_data.length > 0
+                each mn, index in mn_data
+                  tr
+                    td.text-center ##{index + 1}
+                    td
+                      a(href='/address/' + mn.addr) #{mn.addr.length > 20 ? mn.addr.substring(0, 10) + '...' + mn.addr.substring(mn.addr.length - 10) : mn.addr}
+                    td.text-center #{mn.last_paid_block > 0 ? mn.last_paid_block : 'N/A'}
+              else
+                tr
+                  td.text-center(colspan='3') No masternode data available
