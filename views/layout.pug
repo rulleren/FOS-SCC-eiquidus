@@ -174,7 +174,7 @@ html(lang='en')
       - showDifficultyChart = false
     if active == 'home' || active == 'address' || active == 'block' || active == 'extraction' || active == 'markets' || active == 'masternodes' || active == 'movement' || active == 'network' || active == 'orphans' || active == 'reward' || active == 'richlist' || active == 'tx'
       include ./includes/common.pug
-    if active == 'markets' || active == 'richlist' || active == 'reward' || showNethashChart == true || showDifficultyChart == true
+    if active == 'markets' || active == 'richlist' || active == 'reward' || active == 'extraction' || showNethashChart == true || showDifficultyChart == true
       script(type='text/javascript', src='https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js')
     if active == 'markets'
       script(type='text/javascript', src='https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1/dist/chartjs-chart-financial.min.js')

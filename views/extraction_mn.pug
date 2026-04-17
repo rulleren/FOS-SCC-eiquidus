@@ -1,0 +1,147 @@
+extends layout
+
+block content
+  script.
+    $(document).ready(function() {
+      var mn_data = !{JSON.stringify(mn_data)};
+      var total_rewards = !{total_mn_rewards};
+
+      if (mn_data.length === 0 || total_rewards === 0) return;
+
+      var chartColors = [
+        'rgba(54, 162, 235, 0.85)',
+        'rgba(255, 99, 132, 0.85)',
+        'rgba(75, 192, 192, 0.85)',
+        'rgba(255, 205, 86, 0.85)',
+        'rgba(153, 102, 255, 0.85)',
+        'rgba(255, 159, 64, 0.85)',
+        'rgba(199, 199, 199, 0.85)',
+        'rgba(83, 102, 255, 0.85)',
+        'rgba(40, 159, 64, 0.85)',
+        'rgba(210, 99, 132, 0.85)'
+      ];
+
+      var labels = [];
+      var data = [];
+      var colors = [];
+      var othersCount = 0;
+
+      for (var i = 0; i < mn_data.length; i++) {
+        if (i < 9) {
+          var label = mn_data[i]['claim_name'] && mn_data[i]['claim_name'] !== '' ? mn_data[i]['claim_name'] : mn_data[i]['_id'];
+          if (label.length > 20)
+            label = label.substring(0, 10) + '...' + label.substring(label.length - 10);
+          labels.push(label);
+          data.push(mn_data[i]['count']);
+          colors.push(chartColors[i % chartColors.length]);
+        } else {
+          othersCount += mn_data[i]['count'];
+        }
+      }
+
+      if (othersCount > 0) {
+        labels.push('Others');
+        data.push(othersCount);
+        colors.push('rgba(128, 128, 128, 0.85)');
+      }
+
+      new Chart('mnChart', {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            backgroundColor: colors,
+            borderColor: colors.map(function(c) { return c.replace('0.85', '1'); }),
+            borderWidth: 1,
+            data: data
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  var pct = total_rewards > 0 ? ((context.parsed / total_rewards) * 100).toFixed(1) : '0.0';
+                  return context.label + ': ' + context.parsed + ' (' + pct + '%)';
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  - var theadClasses = [];
+  if settings.shared_pages.table_header_bgcolor != null && settings.shared_pages.table_header_bgcolor != ''
+    - theadClasses.push('table-' + settings.shared_pages.table_header_bgcolor);
+  .row(style='margin: 0 0 5px 0;')
+    .col-12
+      .container
+        #page-header-container(style='align-items:flex-start;')
+          #header-img-container
+            span.fa-solid.fa-crown(style='font-size:2.5rem;color:#20c997;margin-right:12px;')
+          #page-title-container
+            h3#page-title Masternode Reward Distribution
+            .sub-page-header.text-muted
+              | Distribution of the last
+              strong  #{block_count}
+              |  #{settings.coin.name} Masternode rewards
+        .cardSpacer.clearfix
+  .row(style='margin-left:0;margin-right:0;margin-bottom:10px;')
+    .col-12
+      .container
+        .card.border-0(style='background:#f8f9fa;')
+          .card-body.p-2
+            a(href='/extraction', style='text-decoration:none;')
+              span.fa-solid.fa-chevron-left(style='margin-right:6px;')
+            a.fw-bold(href='/extraction') See other Extraction statistics
+  .row(style='margin-left:0;margin-right:0;margin-bottom:10px;')
+    .col-12
+      .container
+        .alert.alert-info
+          span.fa-solid.fa-circle-info(style='margin-right:8px;font-size:1.4rem;float:left;margin-top:3px;')
+          div(style='margin-left:30px;')
+            strong In this page, you can see information about the distribution of the masternode rewards
+            br
+            | Notice that we are only displaying information about the last #{block_count} blocks.
+  .row(style='margin-left:0;margin-right:0;')
+    .col-12.col-lg-5
+      .container
+        .card.card-default.border
+          .card-body(style='position:relative;')
+            canvas#mnChart(style='max-height:400px;')
+    .col-12.col-lg-7
+      .container
+        .card.card-default.border-0
+          table.table.table-hover.table-bordered.table-striped.summary-table.right-border-0(style='margin-bottom:0;', cellspacing='0')
+            thead
+              tr(class=theadClasses)
+                th.text-center Rank
+                th MN PubKey
+                th.text-center MN rewards
+                th.text-center Percentage
+            tbody
+              if mn_data && mn_data.length > 0
+                each mn, index in mn_data
+                  tr
+                    td.text-center ##{index + 1}
+                    td
+                      a(href='/address/' + mn._id)
+                        if mn.claim_name && mn.claim_name !== ''
+                          | #{mn.claim_name}
+                        else
+                          | #{mn._id.length > 22 ? mn._id.substring(0, 12) + '...' + mn._id.substring(mn._id.length - 8) : mn._id}
+                    td.text-center #{mn.count}
+                    td.text-center
+                      if total_mn_rewards > 0
+                        - var pct = parseFloat((mn.count / total_mn_rewards * 100).toFixed(1))
+                        span
+                          strong= Math.floor(pct)
+                          | .#{(pct % 1).toFixed(1).split('.')[1]}
+                          |  %
+                      else
+                        | 0.0 %
+              else
+                tr
+                  td.text-center(colspan='4') No masternode reward data available

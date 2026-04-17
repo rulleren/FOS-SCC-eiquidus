@@ -608,18 +608,21 @@ router.get('/network', function(req, res) {
 // masternode list page
 router.get('/extraction', function(req, res) {
   if (settings.extraction_page.enabled == true) {
+    const block_count = settings.extraction_page.block_count;
     const pow_limit = settings.extraction_page.pow_table.max_items;
     const mn_limit = settings.extraction_page.mn_table.max_items;
 
-    db.get_pow_extraction(pow_limit, function(pow_data, total_blocks) {
-      db.get_mn_reward_distribution(mn_limit, function(mn_data) {
+    db.get_pow_extraction(block_count, pow_limit, function(pow_data, total_pow_blocks) {
+      db.get_mn_reward_distribution(block_count, mn_limit, function(mn_data, total_mn_rewards) {
         res.render(
           'extraction',
           {
             active: 'extraction',
             pow_data: pow_data,
-            total_blocks: total_blocks,
+            total_pow_blocks: total_pow_blocks,
             mn_data: mn_data,
+            total_mn_rewards: total_mn_rewards,
+            block_count: block_count,
             showSync: db.check_show_sync_message(),
             customHash: get_custom_hash(),
             styleHash: get_style_hash(),
@@ -628,6 +631,58 @@ router.get('/extraction', function(req, res) {
           }
         );
       });
+    });
+  } else {
+    route_get_txlist(res, null);
+  }
+});
+
+router.get('/extraction/pow', function(req, res) {
+  if (settings.extraction_page.enabled == true) {
+    const block_count = settings.extraction_page.block_count;
+    const pow_limit = settings.extraction_page.pow_table.max_items;
+
+    db.get_pow_extraction(block_count, pow_limit, function(pow_data, total_pow_blocks) {
+      res.render(
+        'extraction_pow',
+        {
+          active: 'extraction',
+          pow_data: pow_data,
+          total_pow_blocks: total_pow_blocks,
+          block_count: block_count,
+          showSync: db.check_show_sync_message(),
+          customHash: get_custom_hash(),
+          styleHash: get_style_hash(),
+          themeHash: get_theme_hash(),
+          page_title_prefix: settings.coin.name + ' PoW Block Extraction'
+        }
+      );
+    });
+  } else {
+    route_get_txlist(res, null);
+  }
+});
+
+router.get('/extraction/mn', function(req, res) {
+  if (settings.extraction_page.enabled == true) {
+    const block_count = settings.extraction_page.block_count;
+    const mn_limit = settings.extraction_page.mn_table.max_items;
+
+    db.get_mn_reward_distribution(block_count, mn_limit, function(mn_data, total_mn_rewards) {
+      res.render(
+        'extraction_mn',
+        {
+          active: 'extraction',
+          mn_data: mn_data,
+          total_mn_rewards: total_mn_rewards,
+          block_count: block_count,
+          showSync: db.check_show_sync_message(),
+          customHash: get_custom_hash(),
+          styleHash: get_style_hash(),
+          themeHash: get_theme_hash(),
+          page_title_prefix: settings.coin.name + ' Masternode Reward Distribution'
+        }
+      );
     });
   } else {
     route_get_txlist(res, null);
