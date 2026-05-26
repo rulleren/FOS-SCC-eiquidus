@@ -67,11 +67,11 @@ html(lang='en')
         if settings.masternodes_page.show_difficulty_chart == true
           - showDifficultyChart = true
       when 'extraction'
-        if settings.extraction_page.show_panels == true
+        if settings.extraction_page && settings.extraction_page.show_panels == true
           - showPanels = true
-        if settings.extraction_page.show_nethash_chart == true
+        if settings.extraction_page && settings.extraction_page.show_nethash_chart == true
           - showNethashChart = true
-        if settings.extraction_page.show_difficulty_chart == true
+        if settings.extraction_page && settings.extraction_page.show_difficulty_chart == true
           - showDifficultyChart = true
       when 'movement'
         if settings.movement_page.show_panels == true
@@ -1478,7 +1478,7 @@ html(lang='en')
                     a.nav-link(href='/masternodes')
                       span.fa-solid.fa-share-nodes
                       span.margin-left-5 Masternodes
-                if settings.extraction_page.enabled == true
+                if settings.extraction_page && settings.extraction_page.enabled == true
                   li#extraction.nav-item
                     a.nav-link(href='/extraction')
                       span.fa-solid.fa-hammer
@@ -1608,7 +1608,7 @@ html(lang='en')
                   a.nav-link(href='/masternodes')
                     span.nav-icon.fa-solid.fa-share-nodes
                     span.margin-left-5 Masternodes
-              if settings.extraction_page.enabled == true
+              if settings.extraction_page && settings.extraction_page.enabled == true
                 li#extraction.nav-item(alt="Extraction", title="Extraction", data-bs-toggle='tooltip', data-bs-placement='right')
                   a.nav-link(href='/extraction')
                     span.nav-icon.fa-solid.fa-hammer
