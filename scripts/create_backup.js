@@ -31,7 +31,6 @@ function verify_collection_exists(cb) {
     console.log('Connecting to database..');
 
     mongoose.set('strictQuery', true);
-    mongoose.set('updatePipeline', true);
 
     // connect to mongo database
     mongoose.connect(dbString).then(() => {

@@ -171,7 +171,6 @@ if (lib.is_locked([deleteLockName]) == false) {
     console.log('Connecting to database..');
 
     mongoose.set('strictQuery', true);
-    mongoose.set('updatePipeline', true);
 
     // connect to mongo database
     mongoose.connect(dbString).then(() => {
