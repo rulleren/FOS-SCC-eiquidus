@@ -1,0 +1,144 @@
+extends layout
+
+block content
+  script.
+    $(document).ready(function() {
+      var pow_data = !{JSON.stringify(pow_data)};
+      var total_blocks = !{total_pow_blocks};
+
+      if (pow_data.length === 0 || total_blocks === 0) return;
+
+      var chartColors = [
+        'rgba(54, 162, 235, 0.85)',
+        'rgba(255, 99, 132, 0.85)',
+        'rgba(75, 192, 192, 0.85)',
+        'rgba(255, 205, 86, 0.85)',
+        'rgba(153, 102, 255, 0.85)',
+        'rgba(255, 159, 64, 0.85)',
+        'rgba(199, 199, 199, 0.85)',
+        'rgba(83, 102, 255, 0.85)',
+        'rgba(40, 159, 64, 0.85)',
+        'rgba(210, 99, 132, 0.85)'
+      ];
+
+      // Group small slices as "Others"
+      var labels = [];
+      var data = [];
+      var colors = [];
+      var othersCount = 0;
+
+      for (var i = 0; i < pow_data.length; i++) {
+        if (i < 9) {
+          var label = pow_data[i]['_id'];
+          if (label.length > 20)
+            label = label.substring(0, 10) + '...' + label.substring(label.length - 10);
+          labels.push(label);
+          data.push(pow_data[i]['count']);
+          colors.push(chartColors[i % chartColors.length]);
+        } else {
+          othersCount += pow_data[i]['count'];
+        }
+      }
+
+      if (othersCount > 0) {
+        labels.push('Others');
+        data.push(othersCount);
+        colors.push('rgba(128, 128, 128, 0.85)');
+      }
+
+      new Chart('powChart', {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            backgroundColor: colors,
+            borderColor: colors.map(function(c) { return c.replace('0.85', '1'); }),
+            borderWidth: 1,
+            data: data
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  var pct = total_blocks > 0 ? ((context.parsed / total_blocks) * 100).toFixed(1) : '0.0';
+                  return context.label + ': ' + context.parsed + ' (' + pct + '%)';
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  - var theadClasses = [];
+  if settings.shared_pages.table_header_bgcolor != null && settings.shared_pages.table_header_bgcolor != ''
+    - theadClasses.push('table-' + settings.shared_pages.table_header_bgcolor);
+  .row(style='margin: 0 0 5px 0;')
+    .col-12
+      .container
+        #page-header-container(style='align-items:flex-start;')
+          #header-img-container
+            span.fa-solid.fa-hammer(style='font-size:2.5rem;color:#20c997;margin-right:12px;')
+          #page-title-container
+            h3#page-title PoW Block Extraction
+            .sub-page-header.text-muted
+              | Distribution on the last
+              strong  #{block_count}
+              |  #{settings.coin.name} extracted blocks by PoW
+        .cardSpacer.clearfix
+  .row(style='margin-left:0;margin-right:0;margin-bottom:10px;')
+    .col-12
+      .container
+        .card.border-0(style='background:#f8f9fa;')
+          .card-body.p-2
+            a(href='/extraction', style='text-decoration:none;')
+              span.fa-solid.fa-chevron-left(style='margin-right:6px;')
+            a.fw-bold(href='/extraction') See other Extraction statistics
+  .row(style='margin-left:0;margin-right:0;margin-bottom:10px;')
+    .col-12
+      .container
+        .alert.alert-info
+          span.fa-solid.fa-circle-info(style='margin-right:8px;font-size:1.4rem;float:left;margin-top:3px;')
+          div(style='margin-left:30px;')
+            strong In this page, you can see information about the extraction of the last #{block_count} blocks (by the PoW consensus algorithm)
+            br
+            | Notice that we are only displaying information about the extraction of the last #{block_count} PoW blocks.
+  .row(style='margin-left:0;margin-right:0;')
+    .col-12.col-lg-5
+      .container
+        .card.card-default.border
+          .card-body(style='position:relative;')
+            canvas#powChart(style='max-height:400px;')
+    .col-12.col-lg-7
+      .container
+        .card.card-default.border-0
+          table.table.table-hover.table-bordered.table-striped.summary-table.right-border-0(style='margin-bottom:0;', cellspacing='0')
+            thead
+              tr(class=theadClasses)
+                th.text-center Rank
+                th Pool/Minter
+                th.text-center Extracted blocks
+                th.text-center Percentage
+            tbody
+              if pow_data && pow_data.length > 0
+                each miner, index in pow_data
+                  tr
+                    td.text-center ##{index + 1}
+                    td
+                      a(href='/address/' + miner._id) #{miner._id.length > 22 ? miner._id.substring(0, 12) + '...' + miner._id.substring(miner._id.length - 8) : miner._id}
+                    td.text-center #{miner.count}
+                    td.text-center
+                      if total_pow_blocks > 0
+                        - var pct = parseFloat((miner.count / total_pow_blocks * 100).toFixed(1))
+                        span
+                          strong= Math.floor(pct)
+                          | .#{(pct % 1).toFixed(1).split('.')[1]}
+                          |  %
+                      else
+                        | 0.0 %
+              else
+                tr
+                  td.text-center(colspan='4') No extraction data available
