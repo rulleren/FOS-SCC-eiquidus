@@ -3,7 +3,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/rulleren/FOS-SCC-eiquidus)
 ![GitHub](https://img.shields.io/github/license/rulleren/FOS-SCC-eiquidus?color=ffbd11)
 
-FOS-SCC-eiquidus is the official block explorer for [StakeCubeCoin (SCC)](https://explorer.friendsofstakecube.net), maintained by [Friends of StakeCube](https://github.com/rulleren). It is a fork of [eIquidus](https://github.com/team-exor/eiquidus), a feature-rich open-source block explorer written in Node.js and MongoDB. This fork includes SCC-specific fixes, improvements, and customizations built on top of the upstream eIquidus explorer.
+FOS-SCC-eiquidus is a block explorer for [StakeCubeCoin (SCC)](https://explorer.friendsofstakecube.net), maintained by [Friends of StakeCube](https://github.com/rulleren). It is a fork of [eIquidus](https://github.com/team-exor/eiquidus), a feature-rich open-source block explorer written in Node.js and MongoDB. This fork includes SCC-specific fixes, improvements, and customizations built on top of the upstream eIquidus explorer.
 
 > **Live explorer:** [https://explorer.friendsofstakecube.net](https://explorer.friendsofstakecube.net)
 
