@@ -1150,6 +1150,7 @@ app.set('default_coingecko_ids', settings.default_coingecko_ids);
 app.set('api_cmds', settings.api_cmds);
 app.set('blockchain_specific', settings.blockchain_specific);
 app.set('plugins', settings.plugins);
+app.set('extraction_page', settings.extraction_page);
 
 // determine panel offset based on which panels are enabled
 var paneltotal = 5;
