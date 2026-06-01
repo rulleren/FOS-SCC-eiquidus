@@ -266,7 +266,7 @@ block content
                     span #{settings.localization.total}
                   - var total = Number(parseFloat(dista.total) + parseFloat(distb.total) + parseFloat(distc.total) + parseFloat(distd.total) + parseFloat(diste.total) + (settings.richlist_page.burned_coins.include_burned_coins_in_distribution == true && burned != null && burned > 0 ? burned / 100000000 : 0)).toLocaleString('en',{'minimumFractionDigits':2,'maximumFractionDigits':8,'useGrouping':true});
                   - var totalParts = total.split(".");
-                  - var percent = (parseFloat(dista.percent) + parseFloat(distb.percent) + parseFloat(distc.percent) + parseFloat(distd.percent) + parseFloat(diste.percent) + parseFloat((settings.richlist_page.burned_coins.include_burned_coins_in_distribution == true && burned != null && burned > 0 ? ((burned / 100000000) / stats.supply) * 100 : 0))).toLocaleString('en',{'minimumFractionDigits':2,'maximumFractionDigits':2,'useGrouping':false});
+                  - var percent = (100).toLocaleString('en',{'minimumFractionDigits':2,'maximumFractionDigits':2,'useGrouping':false});
                   - var percentParts = percent.split(".");
                   td.text-center.fw-bold.breakWord #{totalParts[0]}.
                     span.decimal.breakWord #{totalParts[1]}
