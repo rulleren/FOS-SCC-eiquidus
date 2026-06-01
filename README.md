@@ -3,7 +3,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/rulleren/FOS-SCC-eiquidus)
 ![GitHub](https://img.shields.io/github/license/rulleren/FOS-SCC-eiquidus?color=ffbd11)
 
-FOS-SCC-eiquidus is a block explorer for [StakeCubeCoin (SCC)](https://explorer.friendsofstakecube.net), maintained by [Friends of StakeCube](https://github.com/rulleren). It is a fork of [eIquidus](https://github.com/team-exor/eiquidus), a feature-rich open-source block explorer written in Node.js and MongoDB. This fork includes SCC-specific fixes, improvements, and customizations built on top of the upstream eIquidus explorer.
+FOS-SCC-eiquidus is a community-maintained block explorer for [StakeCubeCoin (SCC)](https://explorer.friendsofstakecube.net), run by [Friends of StakeCube](https://github.com/rulleren). It is a fork of [eIquidus](https://github.com/team-exor/eiquidus), a feature-rich open-source block explorer written in Node.js and MongoDB. This fork includes SCC-specific fixes, improvements, and customizations built on top of the upstream eIquidus explorer.
 
 > **Live explorer:** [https://explorer.friendsofstakecube.net](https://explorer.friendsofstakecube.net)
 
@@ -45,8 +45,8 @@ Table of Contents
 ### Features
 
 - Built using the following scripts and technologies:
-  - Node.js (v20.9.0 or newer recommended)
-  - MongoDB (v7.0.2 or newer recommended)
+  - Node.js (v20.19.2 or newer recommended)
+  - MongoDB (v8.2.2 or newer recommended)
   - jQuery v3.7.1
   - Bootstrap v5.1.3
   - DataTables v1.13.6
@@ -78,9 +78,9 @@ Table of Contents
 
 The following prerequisites must be installed before using the explorer:
 
-- [Node.js](https://nodejs.org/en/) (v20.9.0 or newer recommended)
-- [MongoDB](https://www.mongodb.com/) (v7.0.2 or newer recommended)
-- [Git](https://git-scm.com/downloads) (v2.36.0 or newer recommended)
+- [Node.js](https://nodejs.org/en/) (v20.19.2 or newer recommended)
+- [MongoDB](https://www.mongodb.com/) (v8.2.2 or newer recommended)
+- [Git](https://git-scm.com/downloads) (v2.47.3 or newer recommended)
 - A fully synchronized `sccd` wallet daemon with `txindex=1` enabled. See the [Wallet Settings](#wallet-settings) section for more details.
 
 ##### Node.js
@@ -99,12 +99,12 @@ nvm install --lts
 
 Follow the official MongoDB install instructions: [https://www.mongodb.com/docs/manual/administration/install-community/](https://www.mongodb.com/docs/manual/administration/install-community/)
 
-Below are instructions to install the latest v7.x version of MongoDB on Ubuntu 22.04 (run one line at a time):
+Below are instructions to install the latest v8.x version of MongoDB on Ubuntu 22.04/24.04 (run one line at a time):
 
 ```
 sudo apt-get install gnupg curl
-curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
-echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+curl -fsSL https://pgp.mongodb.com/server-8.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
 sudo apt-get update
 sudo apt-get install -y mongodb-org
 ```
