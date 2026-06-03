@@ -39,9 +39,11 @@ block content
         }
       }
 
-      if (othersCount > 0) {
+      var displayedCount = data.reduce(function(a,b){return a+b;}, 0) + othersCount;
+      var trueOthers = total_rewards - displayedCount + othersCount;
+      if (trueOthers > 0) {
         labels.push('Others');
-        data.push(othersCount);
+        data.push(trueOthers);
         colors.push('rgba(128, 128, 128, 0.85)');
       }
 
