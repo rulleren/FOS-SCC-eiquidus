@@ -48,7 +48,11 @@ block content
                     tr
                       td.text-center ##{index + 1}
                       td
-                        a(href='/address/' + miner._id) #{miner._id.length > 20 ? miner._id.substring(0, 10) + '...' + miner._id.substring(miner._id.length - 10) : miner._id}
+                        a(href='/address/' + miner._id)
+                          if miner.claim_name && miner.claim_name !== ''
+                            | #{miner.claim_name}
+                          else
+                            | #{miner._id.length > 20 ? miner._id.substring(0, 10) + '...' + miner._id.substring(miner._id.length - 10) : miner._id}
                       td.text-center #{miner.count}
                       td.text-center
                         if total_pow_blocks > 0

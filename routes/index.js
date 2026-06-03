@@ -613,23 +613,30 @@ router.get('/extraction', function(req, res) {
     const mn_limit = settings.extraction_page.mn_table.max_items;
 
     db.get_pow_extraction(block_count, pow_limit, function(pow_data, total_pow_blocks) {
-      db.get_mn_reward_distribution(block_count, mn_limit, function(mn_data, total_mn_rewards) {
-        res.render(
-          'extraction',
-          {
-            active: 'extraction',
-            pow_data: pow_data,
-            total_pow_blocks: total_pow_blocks,
-            mn_data: mn_data,
-            total_mn_rewards: total_mn_rewards,
-            block_count: block_count,
-            showSync: db.check_show_sync_message(),
-            customHash: get_custom_hash(),
-            styleHash: get_style_hash(),
-            themeHash: get_theme_hash(),
-            page_title_prefix: settings.coin.name + ' Block Extraction'
-          }
-        );
+      const pow_addresses = pow_data.map(p => p._id);
+      db.get_extracted_by_claim_names(pow_addresses, function(claim_data) {
+        pow_data = pow_data.map(p => {
+          const match = claim_data.find(c => c.a_id === p._id);
+          return Object.assign({}, p, { claim_name: match ? match.claimname : '' });
+        });
+        db.get_mn_reward_distribution(block_count, mn_limit, function(mn_data, total_mn_rewards) {
+          res.render(
+            'extraction',
+            {
+              active: 'extraction',
+              pow_data: pow_data,
+              total_pow_blocks: total_pow_blocks,
+              mn_data: mn_data,
+              total_mn_rewards: total_mn_rewards,
+              block_count: block_count,
+              showSync: db.check_show_sync_message(),
+              customHash: get_custom_hash(),
+              styleHash: get_style_hash(),
+              themeHash: get_theme_hash(),
+              page_title_prefix: settings.coin.name + ' Block Extraction'
+            }
+          );
+        });
       });
     });
   } else {
