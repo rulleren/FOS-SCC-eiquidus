@@ -24,6 +24,7 @@
     "reindex-rich": "node ./scripts/sync.js index reindex-rich",
     "reindex-txcount": "node ./scripts/sync.js index reindex-txcount",
     "reindex-last": "node ./scripts/sync.js index reindex-last",
+    "create-bootstrap": "node ./scripts/create_bootstrap.js",
     "create-backup": "node ./scripts/create_backup.js",
     "restore-backup": "node ./scripts/restore_backup.js",
     "delete-database": "node ./scripts/delete_database.js",

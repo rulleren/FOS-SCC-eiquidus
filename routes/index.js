@@ -703,6 +703,34 @@ router.get('/extraction/mn', function(req, res) {
   }
 });
 
+router.get('/bootstrap', function(req, res) {
+  if (settings.bootstrap_page && settings.bootstrap_page.enabled == true) {
+    const fs = require('fs');
+    const path = require('path');
+    const metaFile = path.join(path.dirname(__dirname), 'public', 'downloads', 'bootstrap-meta.json');
+    let meta = null;
+
+    if (fs.existsSync(metaFile)) {
+      try { meta = JSON.parse(fs.readFileSync(metaFile, 'utf8')); } catch(e) {}
+    }
+
+    res.render(
+      'bootstrap',
+      {
+        active: 'bootstrap',
+        meta: meta,
+        showSync: db.check_show_sync_message(),
+        customHash: get_custom_hash(),
+        styleHash: get_style_hash(),
+        themeHash: get_theme_hash(),
+        page_title_prefix: settings.coin.name + ' Bootstrap'
+      }
+    );
+  } else {
+    route_get_txlist(res, null);
+  }
+});
+
 router.get('/masternodes', function(req, res) {
   // ensure masternode page is enabled
   if (settings.masternodes_page.enabled == true) {

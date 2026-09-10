@@ -1,0 +1,76 @@
+extends layout
+
+block content
+  - var theadClasses = [];
+  if settings.shared_pages.table_header_bgcolor != null && settings.shared_pages.table_header_bgcolor != ''
+    - theadClasses.push('table-' + settings.shared_pages.table_header_bgcolor);
+  if settings.bootstrap_page && (settings.bootstrap_page.page_header.show_img == true || settings.bootstrap_page.page_header.show_title == true || settings.bootstrap_page.page_header.show_description == true)
+    .row(style='margin: 0 0 5px 0;')
+      .col-12
+        .container
+          #page-header-container(style='align-items:flex-start;')
+            if settings.bootstrap_page.page_header.show_img == true
+              #header-img-container
+                img#header-img(src=(settings.shared_pages.page_header.page_title_image == null || settings.shared_pages.page_header.page_title_image.image_path == null || settings.shared_pages.page_header.page_title_image.image_path == '' ? '/img/page-title-img.png' : settings.shared_pages.page_header.page_title_image.image_path))
+            #page-title-container
+              if settings.bootstrap_page.page_header.show_title == true
+                h3#page-title #{settings.coin.name} Bootstrap
+              if settings.bootstrap_page.page_header.show_description == true
+                .sub-page-header.text-muted
+                  | Download a pre-synced database snapshot to get your explorer up and running quickly
+          .cardSpacer.clearfix
+  .row(style='margin-left:0;margin-right:0;margin-bottom:20px;')
+    .col-12
+      .container
+        if meta
+          .card.border-0.shadow-sm
+            .card-body.text-center(style='padding:2rem;')
+              span.fa-solid.fa-database(style='font-size:3rem;color:#20c997;margin-bottom:1rem;display:block;')
+              h4.mb-1 #{settings.coin.name} Explorer Bootstrap
+              p.text-muted.mb-3
+                | Database snapshot — ready to restore with
+                code  mongorestore
+              .d-flex.justify-content-center.gap-4.mb-4.flex-wrap
+                .text-center
+                  div.text-muted(style='font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;') File size
+                  strong= (meta.size / 1024 / 1024).toFixed(1) + ' MB'
+                .text-center
+                  div.text-muted(style='font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;') Generated
+                  strong
+                    if meta.generated
+                      = new Date(meta.generated).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})
+                    else
+                      | Unknown
+                .text-center
+                  div.text-muted(style='font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;') Format
+                  strong mongodump gzip
+              a.btn.btn-success.btn-lg(href='/downloads/bootstrap.gz', download)
+                span.fa-solid.fa-download(style='margin-right:8px;')
+                | Download Bootstrap
+          .card.border-0.bg-light.mt-3
+            .card-body
+              h6.fw-bold
+                span.fa-solid.fa-terminal(style='margin-right:8px;')
+                | How to restore
+              p.mb-2.text-muted(style='font-size:0.9rem;') Stop syncing, restore the snapshot, then restart:
+              pre.mb-0(style='background:#212529;color:#f8f9fa;padding:1rem;border-radius:6px;font-size:0.85rem;overflow-x:auto;')
+                | # 1. Stop the explorer sync
+                | &NewLine;node scripts/sync.js index update   # let it finish current block, then Ctrl+C
+                | &NewLine;
+                | &NewLine;# 2. Delete the existing database (optional if restoring to a fresh install)
+                | &NewLine;npm run delete-database
+                | &NewLine;
+                | &NewLine;# 3. Restore the bootstrap
+                | &NewLine;mongorestore --host="127.0.0.1" --port="27017" \
+                | &NewLine;  --username="youruser" --password="yourpass" \
+                | &NewLine;  --archive="bootstrap.gz" --gzip
+                | &NewLine;
+                | &NewLine;# 4. Resume syncing
+                | &NewLine;npm run sync-blocks
+        else
+          .card.border-0.text-center(style='padding:3rem;')
+            span.fa-solid.fa-clock(style='font-size:3rem;color:#6c757d;margin-bottom:1rem;display:block;')
+            h5.text-muted No bootstrap available yet
+            p.text-muted
+              | The bootstrap archive is generated monthly. Check back soon, or
+              |  contact the explorer operator.
