@@ -3,21 +3,38 @@ const fs = require('fs');
 const path = require('path');
 const settings = require('../lib/settings');
 
+const coinDataDir = (settings.bootstrap_page && settings.bootstrap_page.coin_data_dir) || '';
 const outputDir = path.join(path.dirname(__dirname), 'public', 'downloads');
-const outputFile = path.join(outputDir, 'bootstrap.gz');
+const outputFile = path.join(outputDir, 'bootstrap.zip');
 const metaFile = path.join(outputDir, 'bootstrap-meta.json');
+
+if (!coinDataDir) {
+  console.error('Error: bootstrap_page.coin_data_dir is not configured in settings.json');
+  process.exit(1);
+}
+
+if (!fs.existsSync(path.join(coinDataDir, 'blocks'))) {
+  console.error(`Error: blocks/ directory not found in ${coinDataDir}`);
+  process.exit(1);
+}
 
 if (!fs.existsSync(outputDir))
   fs.mkdirSync(outputDir, { recursive: true });
 
-console.log('Creating bootstrap archive...');
+// remove previous bootstrap so zip doesn't append to it
+if (fs.existsSync(outputFile))
+  fs.unlinkSync(outputFile);
 
-const cmd = `mongodump --host="${settings.dbsettings.address}" --port="${settings.dbsettings.port}" --username="${settings.dbsettings.user}" --password="${settings.dbsettings.password}" --db="${settings.dbsettings.database}" --archive="${outputFile}" --gzip`;
+// include blocks/ and chainstate/ if they exist
+const dirs = ['blocks', 'chainstate'].filter(d => fs.existsSync(path.join(coinDataDir, d)));
 
+console.log(`Creating bootstrap from ${coinDataDir} (${dirs.join(', ')})...`);
+
+const cmd = `cd "${coinDataDir}" && zip -r "${outputFile}" ${dirs.join(' ')}`;
 const proc = exec(cmd);
 
-proc.stdout.on('data', data => console.log(data));
-proc.stderr.on('data', data => console.log(Buffer.from(data).toString()));
+proc.stdout.on('data', data => process.stdout.write(data));
+proc.stderr.on('data', data => process.stderr.write(Buffer.from(data).toString()));
 proc.on('error', err => { console.error(err); process.exit(1); });
 
 proc.on('exit', (code, signal) => {
@@ -30,7 +47,7 @@ proc.on('exit', (code, signal) => {
   const meta = {
     generated: Date.now(),
     size: stats.size,
-    filename: 'bootstrap.gz'
+    filename: 'bootstrap.zip'
   };
 
   fs.writeFileSync(metaFile, JSON.stringify(meta, null, 2));

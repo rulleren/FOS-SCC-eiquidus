@@ -1,9 +1,6 @@
 extends layout
 
 block content
-  - var theadClasses = [];
-  if settings.shared_pages.table_header_bgcolor != null && settings.shared_pages.table_header_bgcolor != ''
-    - theadClasses.push('table-' + settings.shared_pages.table_header_bgcolor);
   if settings.bootstrap_page && (settings.bootstrap_page.page_header.show_img == true || settings.bootstrap_page.page_header.show_title == true || settings.bootstrap_page.page_header.show_description == true)
     .row(style='margin: 0 0 5px 0;')
       .col-12
@@ -17,7 +14,7 @@ block content
                 h3#page-title #{settings.coin.name} Bootstrap
               if settings.bootstrap_page.page_header.show_description == true
                 .sub-page-header.text-muted
-                  | Download a pre-synced database snapshot to get your explorer up and running quickly
+                  | Download a pre-synced chain snapshot to fast-track your #{settings.coin.name} wallet sync
           .cardSpacer.clearfix
   .row(style='margin-left:0;margin-right:0;margin-bottom:20px;')
     .col-12
@@ -25,11 +22,14 @@ block content
         if meta
           .card.border-0.shadow-sm
             .card-body.text-center(style='padding:2rem;')
-              span.fa-solid.fa-database(style='font-size:3rem;color:#20c997;margin-bottom:1rem;display:block;')
-              h4.mb-1 #{settings.coin.name} Explorer Bootstrap
+              span.fa-solid.fa-file-zipper(style='font-size:3rem;color:#20c997;margin-bottom:1rem;display:block;')
+              h4.mb-1 #{settings.coin.name} Bootstrap
               p.text-muted.mb-3
-                | Database snapshot — ready to restore with
-                code  mongorestore
+                | Contains
+                strong  blocks/
+                |  and
+                strong  chainstate/
+                |  — extract into your #{settings.coin.name} data directory
               .d-flex.justify-content-center.gap-4.mb-4.flex-wrap
                 .text-center
                   div.text-muted(style='font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;') File size
@@ -42,31 +42,30 @@ block content
                     else
                       | Unknown
                 .text-center
-                  div.text-muted(style='font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;') Format
-                  strong mongodump gzip
-              a.btn.btn-success.btn-lg(href='/downloads/bootstrap.gz', download)
+                  div.text-muted(style='font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;') Contents
+                  strong blocks/ &amp; chainstate/
+              a.btn.btn-success.btn-lg(href='/downloads/bootstrap.zip', download)
                 span.fa-solid.fa-download(style='margin-right:8px;')
                 | Download Bootstrap
           .card.border-0.bg-light.mt-3
             .card-body
               h6.fw-bold
                 span.fa-solid.fa-terminal(style='margin-right:8px;')
-                | How to restore
-              p.mb-2.text-muted(style='font-size:0.9rem;') Stop syncing, restore the snapshot, then restart:
+                | How to use
+              p.mb-2.text-muted(style='font-size:0.9rem;') Stop your wallet, extract the archive into your data directory, then restart:
               pre.mb-0(style='background:#212529;color:#f8f9fa;padding:1rem;border-radius:6px;font-size:0.85rem;overflow-x:auto;')
-                | # 1. Stop the explorer sync
-                | &NewLine;node scripts/sync.js index update   # let it finish current block, then Ctrl+C
+                | # 1. Stop your StakeCubeCoin wallet / daemon
+                | &NewLine;stakecubecoind stop
                 | &NewLine;
-                | &NewLine;# 2. Delete the existing database (optional if restoring to a fresh install)
-                | &NewLine;npm run delete-database
+                | &NewLine;# 2. Remove old chain data (keep wallet.dat and stakecubecoin.conf!)
+                | &NewLine;cd ~/.stakecubecoin
+                | &NewLine;rm -rf blocks/ chainstate/
                 | &NewLine;
-                | &NewLine;# 3. Restore the bootstrap
-                | &NewLine;mongorestore --host="127.0.0.1" --port="27017" \
-                | &NewLine;  --username="youruser" --password="yourpass" \
-                | &NewLine;  --archive="bootstrap.gz" --gzip
+                | &NewLine;# 3. Extract the bootstrap
+                | &NewLine;unzip /path/to/bootstrap.zip -d ~/.stakecubecoin/
                 | &NewLine;
-                | &NewLine;# 4. Resume syncing
-                | &NewLine;npm run sync-blocks
+                | &NewLine;# 4. Restart — it will reindex from the snapshot
+                | &NewLine;stakecubecoind -reindex
         else
           .card.border-0.text-center(style='padding:3rem;')
             span.fa-solid.fa-clock(style='font-size:3rem;color:#6c757d;margin-bottom:1rem;display:block;')
