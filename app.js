@@ -1151,6 +1151,7 @@ app.set('api_cmds', settings.api_cmds);
 app.set('blockchain_specific', settings.blockchain_specific);
 app.set('plugins', settings.plugins);
 app.set('extraction_page', settings.extraction_page);
+app.set('bootstrap_page', settings.bootstrap_page);
 
 // determine panel offset based on which panels are enabled
 var paneltotal = 5;

@@ -25,11 +25,7 @@ block content
               span.fa-solid.fa-file-zipper(style='font-size:3rem;color:#20c997;margin-bottom:1rem;display:block;')
               h4.mb-1 #{settings.coin.name} Bootstrap
               p.text-muted.mb-3
-                | Contains
-                strong  blocks/
-                |  and
-                strong  chainstate/
-                |  — extract into your #{settings.coin.name} data directory
+                | Full chain snapshot (blocks, chainstate, evodb, llmq, indexes) — no wallet or config included
               .d-flex.justify-content-center.gap-4.mb-4.flex-wrap
                 .text-center
                   div.text-muted(style='font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;') File size
@@ -43,7 +39,7 @@ block content
                       | Unknown
                 .text-center
                   div.text-muted(style='font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;') Contents
-                  strong blocks/ &amp; chainstate/
+                  strong Full chain data
               a.btn.btn-success.btn-lg(href='/downloads/bootstrap.zip', download)
                 span.fa-solid.fa-download(style='margin-right:8px;')
                 | Download Bootstrap
@@ -52,24 +48,27 @@ block content
               h6.fw-bold
                 span.fa-solid.fa-terminal(style='margin-right:8px;')
                 | How to use
-              p.mb-2.text-muted(style='font-size:0.9rem;') Stop your wallet, extract the archive into your data directory, then restart:
+              p.mb-2.text-muted(style='font-size:0.9rem;') Stop your node, remove the old chain data (keep your wallet and config), extract, and start normally — no -reindex needed:
               pre.mb-0(style='background:#212529;color:#f8f9fa;padding:1rem;border-radius:6px;font-size:0.85rem;overflow-x:auto;')
-                | # 1. Stop your StakeCubeCoin wallet / daemon
-                | &NewLine;stakecubecoind stop
+                | # 1. Stop your node
+                | &NewLine;scc-cli stop
                 | &NewLine;
-                | &NewLine;# 2. Remove old chain data (keep wallet.dat and stakecubecoin.conf!)
+                | &NewLine;# 2. Go to your data directory
+                | &NewLine;#    ~/.stakecubecoin  (default)  or  ~/.scc  (SCC-multitool nodes)
                 | &NewLine;cd ~/.stakecubecoin
-                | &NewLine;rm -rf blocks/ chainstate/
                 | &NewLine;
-                | &NewLine;# 3. Extract the bootstrap
-                | &NewLine;unzip /path/to/bootstrap.zip -d ~/.stakecubecoin/
+                | &NewLine;# 3. Remove everything EXCEPT wallet.dat, wallets/ and stakecubecoin.conf
+                | &NewLine;find . -mindepth 1 -maxdepth 1 ! -name 'wallet.dat' ! -name 'wallets' ! -name '*.conf' -exec rm -rf {} +
                 | &NewLine;
-                | &NewLine;# 4. Restart — it will reindex from the snapshot
-                | &NewLine;stakecubecoind -reindex
+                | &NewLine;# 4. Extract the bootstrap
+                | &NewLine;unzip /path/to/bootstrap.zip -d .
+                | &NewLine;
+                | &NewLine;# 5. Start the node normally
+                | &NewLine;sccd -daemon
         else
           .card.border-0.text-center(style='padding:3rem;')
             span.fa-solid.fa-clock(style='font-size:3rem;color:#6c757d;margin-bottom:1rem;display:block;')
             h5.text-muted No bootstrap available yet
             p.text-muted
-              | The bootstrap archive is generated monthly. Check back soon, or
+              | The bootstrap archive is generated weekly. Check back soon, or
               |  contact the explorer operator.

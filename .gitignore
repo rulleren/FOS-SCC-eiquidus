@@ -35,3 +35,9 @@ settings.json
 .DS_Store
 
 package-lock.json
+# Local server artifacts
+public/downloads/
+backups/
+.claude/
+*.bak*
+*.css.map
