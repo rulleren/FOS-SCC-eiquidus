@@ -38,6 +38,7 @@ Table of Contents
   - [Fix Address Balances Script](#fix-address-balances-script)
   - [Remove Duplicate Addresses Script](#remove-duplicate-addresses-script)
   - [Reindex Richlist](#reindex-richlist)
+- [Bootstrap Download](#bootstrap-download)
 - [Known Issues](#known-issues)
 - [Upstream Project](#upstream-project)
 - [License](#license)
@@ -61,12 +62,14 @@ Table of Contents
   - **Top 100:** Displays the top 100 richest SCC addresses with wealth distribution breakdown
   - **API:** Public API endpoints for retrieving SCC network data without a local wallet
   - **Claim Address:** Allows address owners to set custom display names using wallet message signing
+  - **Bootstrap:** Download page for a weekly full chain snapshot, so new SCC nodes can skip the initial sync
 - SCC-specific fixes and improvements:
-  - Fixed wealth distribution total always displaying correctly as 100.00%
+  - Fixed wealth distribution total so it sums the rounded values instead of always showing 100.00%
   - Fixed address balance calculation and transaction ordering
   - Fixed extraction page settings propagation
   - Added `fix-balances` script for recalculating address balances after sync issues
   - Added `remove-duplicate-addresses` script for database cleanup
+  - Added weekly bootstrap snapshot (multitool-compatible) with download page
 
 ### See it in Action
 
@@ -99,7 +102,7 @@ nvm install --lts
 
 Follow the official MongoDB install instructions: [https://www.mongodb.com/docs/manual/administration/install-community/](https://www.mongodb.com/docs/manual/administration/install-community/)
 
-Below are instructions to install the latest v8.x version of MongoDB on Ubuntu 22.04/24.04 (run one line at a time):
+Below are instructions to install MongoDB 8.0 on Ubuntu 24.04 (run one line at a time). For other distributions, use the official guide above:
 
 ```
 sudo apt-get install gnupg curl
@@ -133,8 +136,10 @@ use explorerdb
 Create a new user with read/write access:
 
 ```
-db.createUser( { user: "eiquidus", pwd: "Nd^p2d77ceBX!L", roles: [ "readWrite" ] } )
+db.createUser( { user: "eiquidus", pwd: "<choose_a_strong_password>", roles: [ "readWrite" ] } )
 ```
+
+Use the same password for `dbsettings.password` in `settings.json`. Do not keep the example password from the upstream documentation.
 
 Exit:
 
@@ -214,9 +219,15 @@ npm run reindex         # Full reindex of all blockchain data
 #### Sample Crontab
 
 ```
-*/1 * * * * cd /root/explorer && /usr/bin/node scripts/sync.js update 2>/dev/null
-*/5 * * * * cd /root/explorer && /usr/bin/node scripts/sync.js market 2>/dev/null
-0 */4 * * * cd /root/explorer && /usr/bin/node scripts/sync.js richlist 2>/dev/null
+# block sync every 30 seconds (flock prevents overlapping runs)
+*/1 * * * * flock -n /tmp/sync.lock -c 'cd /root/explorer && /usr/bin/node scripts/sync.js update' > /dev/null 2>&1
+*/1 * * * * sleep 30 && flock -n /tmp/sync.lock -c 'cd /root/explorer && /usr/bin/node scripts/sync.js update' > /dev/null 2>&1
+*/55 * * * * cd /root/explorer && /usr/bin/node scripts/sync.js market > /dev/null 2>&1
+*/55 * * * * cd /root/explorer && /usr/bin/node scripts/sync.js peers > /dev/null 2>&1
+*/55 * * * * cd /root/explorer && /usr/bin/node scripts/sync.js masternodes > /dev/null 2>&1
+0 */4 * * * cd /root/explorer && /usr/bin/node scripts/sync.js richlist > /dev/null 2>&1
+# weekly bootstrap snapshot (Sunday 03:00), see Bootstrap Download
+0 3 * * 0 /root/explorer/scripts/bootstrap-cron.sh >> /var/log/bootstrap.log 2>&1
 ```
 
 ### Wallet Settings
@@ -286,6 +297,30 @@ Rebuilds the top 100 richlist from current address balances in the database:
 ```
 npm run reindex-rich
 ```
+
+### Bootstrap Download
+
+The explorer can publish a full chain snapshot at `/bootstrap` so new SCC nodes start without a full sync. The archive follows the same layout as the official [SCC-multitool](https://github.com/stakecube/SCC-multitool): the whole wallet data directory (`blocks`, `chainstate`, `evodb`, `llmq`, `indexes`, cache `.dat` files) is included, while wallets, `*.conf`, `backups/`, `debug.log`, lock/pid files, `mempool.dat`, `banlist.dat` and `netfulfilled.dat` are excluded. Nodes extract it into their data directory and start normally, no `-reindex` needed.
+
+Enable it in `settings.json`:
+
+```
+"bootstrap_page": {
+  "enabled": true,
+  "coin_data_dir": "/root/.stakecubecoin"
+}
+```
+
+Build a snapshot manually (requires `7zip`, falls back to `zip`):
+
+```
+sudo apt install 7zip unzip
+sudo /root/explorer/scripts/bootstrap-cron.sh
+```
+
+`bootstrap-cron.sh` stops `sccd` only while packing (about 80 seconds), starts it again, then tests the archive, checks that no wallet/config files are included and atomically replaces `public/downloads/bootstrap.zip`. The running explorer keeps serving the previous snapshot until the new one is ready.
+
+Because the archive is several GB, serving it from a home connection is not recommended. The production deployment mirrors it to Cloudflare R2 after each build (optional `/usr/local/bin/bootstrap-r2.sh`, not part of this repository) and redirects downloads there, with a rate-limited local fallback.
 
 ### Known Issues
 
