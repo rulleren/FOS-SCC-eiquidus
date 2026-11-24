@@ -46,7 +46,7 @@ Table of Contents
 ### Features
 
 - Built using the following scripts and technologies:
-  - Node.js (v20.19.2 or newer recommended)
+  - Node.js (v24.x LTS recommended, v20.19.0 minimum)
   - MongoDB (v8.2.2 or newer recommended)
   - jQuery v3.7.1
   - Bootstrap v5.1.3
@@ -81,7 +81,7 @@ Table of Contents
 
 The following prerequisites must be installed before using the explorer:
 
-- [Node.js](https://nodejs.org/en/) (v20.19.2 or newer recommended)
+- [Node.js](https://nodejs.org/en/) (v24.x LTS recommended, v20.19.0 minimum)
 - [MongoDB](https://www.mongodb.com/) (v8.2.2 or newer recommended)
 - [Git](https://git-scm.com/downloads) (v2.47.3 or newer recommended)
 - A fully synchronized `sccd` wallet daemon with `txindex=1` enabled. See the [Wallet Settings](#wallet-settings) section for more details.
