@@ -15,5 +15,6 @@ echo "--- sccd nede i $((T2-T1))s (stop tog $((T1-T0))s)"
 if [ $RC -eq 0 ]; then
   /usr/bin/node scripts/create_bootstrap.js finalize; RC=$?
 fi
+[ $RC -eq 0 ] && /usr/local/bin/bootstrap-r2.sh upload || true
 echo "=== $(date -Is) slut rc=$RC (total $(( $(date +%s)-T0 ))s)"
 exit $RC

@@ -20,10 +20,11 @@ const outputFile = path.join(outputDir, 'bootstrap.zip');
 const tmpFile = outputFile + '.tmp';
 const metaFile = path.join(outputDir, 'bootstrap-meta.json');
 
-// never ship wallets, config, logs, pid/lock files or the mempool (7z exclude syntax)
+// never ship wallets, config, logs, pid/lock files, the mempool or node-specific state (7z exclude syntax)
 const excludes = [
   '-xr!wallet.dat', '-xr!wallets', '-xr!backups', '-xr!*.conf', '-xr!debug.log',
-  '-xr!*.pid', '-xr!.lock', '-xr!LOCK', '-xr!mempool.dat', '-xr!*.tmp'
+  '-xr!*.pid', '-xr!.lock', '-xr!LOCK', '-xr!mempool.dat', '-xr!*.tmp',
+  '-xr!banlist.dat', '-xr!netfulfilled.dat'  // node-specific state, not useful for other nodes
 ];
 
 const q = s => `'${s.replace(/'/g, `'\\''`)}'`;
@@ -46,7 +47,7 @@ function build() {
   // 7z writes a standard .zip (deflate, level 1) using all CPU cores; plain zip as fallback
   const cmd = sevenZip
     ? `cd ${q(coinDataDir)} && ${sevenZip} a -tzip -mx=1 -mmt=on -bd -bso0 -bsp0 ${q(tmpFile)} * ${excludes.map(q).join(' ')}`
-    : `cd ${q(coinDataDir)} && zip -r -q -1 ${q(tmpFile)} . -x 'wallet.dat' 'wallets/*' 'backups/*' '*.conf' 'debug.log' '*.pid' '.lock' '*/LOCK' 'mempool.dat' '*.tmp'`;
+    : `cd ${q(coinDataDir)} && zip -r -q -1 ${q(tmpFile)} . -x 'wallet.dat' 'wallets/*' 'backups/*' '*.conf' 'debug.log' '*.pid' '.lock' '*/LOCK' 'mempool.dat' '*.tmp' 'banlist.dat' 'netfulfilled.dat'`;
 
   console.log(`Creating bootstrap from ${coinDataDir} using ${sevenZip || 'zip'} ...`);
   try { execSync(cmd, { stdio: 'inherit' }); } catch (e) { fail(e.message); }
